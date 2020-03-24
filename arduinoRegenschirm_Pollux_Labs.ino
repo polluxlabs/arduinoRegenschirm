@@ -365,54 +365,6 @@ const unsigned char umbrella [] PROGMEM = {
   0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
 };
 
-void setup() {
-
-  pinMode (12, OUTPUT); //LED Pin (am ESP8266 D6)
-  pinMode (13, INPUT); //Radar Pin (am ESP8266 D7)
-
-  Serial.begin(115200); //Verbindung zum Seriellen Monitor
-
-  if (!display.begin(SSD1306_SWITCHCAPVCC, 0x3C)) { // Display-Addresse: 0x3C
-    Serial.println(F("SSD1306 allocation failed"));
-    for (;;);
-  }
-
-  display.setTextSize(1); //Schriftgröße
-  display.setTextColor(WHITE); //Schriftfarbe
-}
-
-
-void loop() {
-
-  delay(100); //100 Millisekunden warten
-  if (digitalRead(13) == 1) { //Sobald das Radar eine Bewegung registriert, startet die Internet-Verbindung
-    WiFi.begin(ssid, password); //Internet-Verbindung starten
-
-    while (WiFi.status() != WL_CONNECTED) { //Statusnachricht "Verbindung herstellen" solange nicht verbunden
-      delay(1000);
-      display.clearDisplay();
-      display.setCursor(0, 10);
-      display.println("Connecting to WiFi...");
-      display.display();
-
-    }
-
-    delay(1000);
-    display.clearDisplay();
-    display.setCursor(0, 10);
-    display.println("Hello, world!"); //Ausgabe, sobald die Verbindung zum Internet steht
-    display.display();
-
-    apiCall(); //Aufruf der Funktion für Abruf und Ausgabe der Wetterdaten
-
-  } else {
-    WiFi.disconnect(); //Wenn keine Bewegung registriert wird Internet-Verbindung beenden...
-    digitalWrite(12, LOW); //...und die LED ausschalten
-  }
-}
-
-
-
 void apiCall() {
 
   if ((WiFi.status() == WL_CONNECTED)) { //Netzwerkstatus checken
@@ -547,5 +499,51 @@ void apiCall() {
     else {
       Serial.println("Error on HTTP request");
     }
+  }
+}
+
+void setup() {
+
+  pinMode (12, OUTPUT); //LED Pin (am ESP8266 D6)
+  pinMode (13, INPUT); //Radar Pin (am ESP8266 D7)
+
+  Serial.begin(115200); //Verbindung zum Seriellen Monitor
+
+  if (!display.begin(SSD1306_SWITCHCAPVCC, 0x3C)) { // Display-Addresse: 0x3C
+    Serial.println(F("SSD1306 allocation failed"));
+    for (;;);
+  }
+
+  display.setTextSize(1); //Schriftgröße
+  display.setTextColor(WHITE); //Schriftfarbe
+}
+
+
+void loop() {
+
+  delay(100); //100 Millisekunden warten
+  if (digitalRead(13) == 1) { //Sobald das Radar eine Bewegung registriert, startet die Internet-Verbindung
+    WiFi.begin(ssid, password); //Internet-Verbindung starten
+
+    while (WiFi.status() != WL_CONNECTED) { //Statusnachricht "Verbindung herstellen" solange nicht verbunden
+      delay(1000);
+      display.clearDisplay();
+      display.setCursor(0, 10);
+      display.println("Connecting to WiFi...");
+      display.display();
+
+    }
+
+    delay(1000);
+    display.clearDisplay();
+    display.setCursor(0, 10);
+    display.println("Hello, world!"); //Ausgabe, sobald die Verbindung zum Internet steht
+    display.display();
+
+    apiCall(); //Aufruf der Funktion für Abruf und Ausgabe der Wetterdaten
+
+  } else {
+    WiFi.disconnect(); //Wenn keine Bewegung registriert wird Internet-Verbindung beenden...
+    digitalWrite(12, LOW); //...und die LED ausschalten
   }
 }
